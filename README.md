@@ -2,10 +2,16 @@
 
 MDN Workspace README
 
-This MDN workspace is divided into two main processes:
-1. Data simulation using SynthETIC
-2. Data processing, MDN fitting and analysis
+This workspace performed the modelling for the related paper:
+"Stochastic loss reserving with mixture density networks"
+Authors: Muhammed Taher Al-Mudafer, Benjamin Avanzi, Greg Taylor, Bernard Wong
 
+This MDN workspace is divided into two main processes:
+1. Data simulation using SynthETIC (code found in R Modules/Data Simulation)
+2. Data processing, MDN fitting and analysis (code found in R Modules/MDN Modelling)
+
+This workspace is tailored to working with the simulated triangles produced in the SynthETIC modules. 
+However, the code provided in this workspace can be altered and transferred to any setting that suits the user's requirements.
 
 
 SynthETIC: Data Simulation
@@ -22,9 +28,21 @@ MDN Modelling
 
 The Modelling Section consists of several stages:
 
-1. Loading the triangle, processing it into a data.table, and partitioning it into training, validation and testing sets
+1. Loading and processing the triangle
 2. Fitting the MDN on the triangle
 3. Analysing the MDN's fit
 4. Simulating total outstanding claims
 
-More detailed instructions are provided in R Modules/MDN Modelling/0.0 MDN_Main.R
+The master script is located in R Modules/MDN Modelling/0.0 MDN_Main.R, which provides a detailed run-through of the entire process
+Once the triangle is simulated, open R Modules/MDN Modelling/0.0 MDN_Main.R to begin the modelling process
+
+
+
+We hope you enjoy using this workspace. If you have any queries, please contact me at muhammed.almudafer97@gmail.com
+
+Kind Regards
+
+Muhammed
+
+
+
