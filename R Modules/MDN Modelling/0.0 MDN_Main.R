@@ -107,7 +107,7 @@ log_setzeros = 6
 Model_Name = "ResMDN"
 
 #PConst: Projection Constraints
-PConst = 1
+PConst = 0  #Note: Projection constraints are only applied to training final models, not to hyper-parameter selection
 
 
 
@@ -137,9 +137,10 @@ if (Model_Name == "ResMDN"){
 }
 
 
-#Training variables:
+#HPSelection and Training variables:
 #Specify the mse, negative log likelihood and projection constraints weights in the loss function
-if (Training){
+#The HPSelection algorithm does not alter these
+if (Training || HPSelection){
   mse_weight = 4
   nll_weight = 1
   if (PConst){
@@ -233,27 +234,22 @@ if (PConst){
 ## SECTION 2: MDN FITTING ##
 ############################
 
-if (Training){
-  
-  
-#Define the MDN, loss function
+
+if (Training || HPSelection){
+  #Define the MDN, loss function
   source('R Modules/MDN Modelling/2.1 MDN Setup.R', echo=TRUE)
-  
-  
-  if (HPSelection){
+}
+
+if (HPSelection){
     
     #Run the hyper-parameter selection algorithm, takes about 8-12 hours
     if (Model_Name == "ResMDN"){
       source('R Modules/MDN Modelling/2.3 ResMDN Selection Algorithm.R', echo=TRUE)
-      
     } else {
       source('R Modules/MDN Modelling/2.2 HP Selection Algorithm.R', echo=TRUE)
-      
     }
-  
     #Now the HP Selection algorithm is run, the final model is saved. Create the final model and train
-  
-  
+
     Chosen_Model = fread(paste0(output_directory, '/Chosen_Model.csv'))
     
     best_netl2 = Chosen_Model$NetL2
@@ -262,20 +258,16 @@ if (Training){
     best_neurons = Chosen_Model$Neurons
     best_hidden = Chosen_Model$Hidden
     best_components = Chosen_Model$Components
-  }
+}
 
-  
+
+if (Training){
   #Separate scripts for fitting the final model, for the MDN and ResMDN
   if (Model_Name == "ResMDN"){
     source('R Modules/MDN Modelling/2.5 ResMDN Fitting.R', echo=TRUE)
-    
   } else {
     source('R Modules/MDN Modelling/2.4 MDN Fitting.R', echo=TRUE)
-    
   }
-  
-  
-  
 }
 
 
