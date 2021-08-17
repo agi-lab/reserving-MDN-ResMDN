@@ -33,7 +33,7 @@ The Modelling Section consists of several stages:
 3. Analysing the MDN's fit
 4. Simulating total outstanding claims
 
-The master script is located in R Modules/MDN Modelling/0.0 MDN_Main.R, which provides a detailed run-through of the entire process
+The master script is located in R Modules/MDN Modelling/0.0 MDN_Main.R, which provides a detailed run-through of the entire process. \n
 Once the triangle is simulated, open R Modules/MDN Modelling/0.0 MDN_Main.R to begin the modelling process
 
 
