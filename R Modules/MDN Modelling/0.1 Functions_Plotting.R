@@ -257,13 +257,13 @@ plotShape = function(Data, AQs, horizon){
     
     #lines(Section$DQ, Section$Real95, col = "black", lwd = 3, lty = 3)
     
-    lines(Section[AQ + DQ <= 41,DQ], Section[AQ + DQ <= 41,MDN25], col = "orange2", lwd = 2, lty = 1)
-    lines(Section[AQ + DQ >= 41,DQ], Section[AQ + DQ >= 41,MDN25], col = "orange2", lwd = 2, lty = 1)
+    lines(Section[AQ + DQ <= 41,DQ], Section[AQ + DQ <= 41,MDN25], col = "red", lwd = 2, lty = 1)
+    lines(Section[AQ + DQ >= 41,DQ], Section[AQ + DQ >= 41,MDN25], col = "red", lwd = 2, lty = 1)
     
     
     
-    lines(Section[AQ + DQ <= 41,DQ], Section[AQ + DQ <= 41,MDN75], col = "orange2", lwd = 2, lty = 2)
-    lines(Section[AQ + DQ >= 41,DQ], Section[AQ + DQ >= 41,MDN75], col = "orange2", lwd = 2, lty = 2)
+    lines(Section[AQ + DQ <= 41,DQ], Section[AQ + DQ <= 41,MDN75], col = "red", lwd = 2, lty = 2)
+    lines(Section[AQ + DQ >= 41,DQ], Section[AQ + DQ >= 41,MDN75], col = "red", lwd = 2, lty = 2)
     
     
     #lines(Section$DQ, Section$MDN95, col = "red", lwd = 3, lty = 3)
