@@ -3,7 +3,9 @@
 MDN Workspace README
 
 This workspace performed the modelling for the related paper:
+
 "Stochastic loss reserving with mixture density networks"
+
 Authors: Muhammed Taher Al-Mudafer, Benjamin Avanzi, Greg Taylor, Bernard Wong
 
 This MDN workspace is divided into two main processes:
@@ -33,7 +35,8 @@ The Modelling Section consists of several stages:
 3. Analysing the MDN's fit
 4. Simulating total outstanding claims
 
-The master script is located in R Modules/MDN Modelling/0.0 MDN_Main.R, which provides a detailed run-through of the entire process. \n
+The master script is located in R Modules/MDN Modelling/0.0 MDN_Main.R, which provides a detailed run-through of the entire process.
+
 Once the triangle is simulated, open R Modules/MDN Modelling/0.0 MDN_Main.R to begin the modelling process
 
 
