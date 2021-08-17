@@ -25,6 +25,6 @@ The Modelling Section consists of several stages:
 1. Loading the triangle, processing it into a data.table, and partitioning it into training, validation and testing sets
 2. Fitting the MDN on the triangle
 3. Analysing the MDN's fit
-4. Comparing the MDN's fit to the ccODP
+4. Simulating total outstanding claims
 
-More detailed instructions are provided in R Modules/MDN Modelling/MDN_Main.R
+More detailed instructions are provided in R Modules/MDN Modelling/0.0 MDN_Main.R
