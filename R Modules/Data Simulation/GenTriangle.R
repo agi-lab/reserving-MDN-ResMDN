@@ -2,7 +2,7 @@
 #GenTriangle function takes the seed as input. It assumes the claim environment has already been loaded. 
 
 
-GenTriangle = function(seed){
+GenTriangle = function(seed, runoff){
 
   set.seed(as.integer(seed))
   
@@ -51,7 +51,7 @@ GenTriangle = function(seed){
   for (i in 1:40){
     for (j in 1:40){
       tr1 <- transaction_dataset[transaction_dataset$occurrence_period == i,]
-      if (j == 40){
+      if (j == 40 && runoff == 1){
         tr2 <- tr1[tr1$payment_period >= j + i - 1,]
       } else {
         tr2 <- tr1[tr1$payment_period == j + i - 1,]
