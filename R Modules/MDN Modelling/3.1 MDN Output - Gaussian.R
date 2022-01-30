@@ -93,6 +93,7 @@ trials = 5
 #start column index
 start = 4
 
+#calculate the quantitative metrics
 Full_Results <- mean_function(Full_Results, start, components, trials)
 Full_Results <- log_score_function(Full_Results, start, components, trials)
 Full_Results <- sigma_function(Full_Results, start, components, trials)
@@ -102,6 +103,8 @@ Full_Results = quantile_prediction(Full_Results, start, components, trials, 0.75
 Full_Results = quantile_prediction(Full_Results, start, components, trials, 0.95, 0.001, 200)
 Full_Results = quantile_loss(Full_Results, 0.75)
 Full_Results = quantile_loss(Full_Results, 0.95)
+Full_Results = CRPS(Full_Results, components = components, trial = trials)
+#
 
 #Set a minimum on the log likelihood of individual cells. 
 #This reduces the influence of low-volume points in the later DQs
@@ -111,13 +114,14 @@ Full_Results[logScore < -50, logScore := -50]
 fwrite(Full_Results, paste0(output_directory, "/Full_Results.csv"))
 
 
-#Record and save the accuracy of the ensemble model (RMSE and Log Score, Quantile Scores) in a data frame
+#Record and save the accuracy of the ensemble model (RMSE, wMAPE, Log Score, CRPS and Quantile Scores) in a data frame
 Scores <- data.frame(
   "Data" = Data_Name,
   "Model" = Model_Name,
   "RMSE" = sqrt(mean(Full_Results[Test == 1, AbsError^2])),
+  "wMAPE" = sum(Full_Results[Test == 1, AbsError])/sum(Full_Results[Test == 1, Loss]),
   "MeanLogScore" = mean(Full_Results[Test == 1, logScore]),
-  "MeanLogScore35" = mean(Full_Results[Test == 1 & DQ <= 35, logScore]),
+  "MeanCRPS" = mean(Full_Results[Test == 1, CRPS]),
   "QuantileScore75" = mean(Full_Results[Test == 1, `MDNLoss75`]),
   "QuantileScore95" = mean(Full_Results[Test == 1, `MDNLoss95`])
 )

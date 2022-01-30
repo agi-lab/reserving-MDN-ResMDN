@@ -815,40 +815,6 @@ MeanSDLog = function(Results, components){
 }
 
 
-# test_data = copy(conv_table)
-# 
-# test_data[,predMean := a1*exp(u1+0.5*s1^2)]
-# test_data[,sigma := a1*((exp(s1^2) - 1)*exp(2*u1 + s1^2) + exp(2*u1+s1^2))]
-# 
-# 
-# test_data[,sigma := sqrt(sigma - predMean^2)]
-# 
-# 
-# exp(2.68^2)*exp(18.5+2.68^2)
-# 
-# 
-# 
-# sims = rnorm(100000, 9.28, 1)
-# 
-# mean(exp(sims))+sd(exp(sims))
-# 
-# quantiles = 0.01*c(1:99)
-# 
-# q_vec = c()
-# 
-# for (i in 1:length(quantiles)){
-#   q_vec[i] = quantile(exp(sims), quantiles[i])
-#   
-#   
-# }
-# 
-# plot(quantiles, q_vec)
-# abline(h = mean(exp(sims))+sd(exp(sims)) )
-
-
-
-
-
 
 DataSplit = function(Full_Data){
   Full_Data = as.data.table(Full_Data)
@@ -1239,8 +1205,6 @@ Simulate_MG <- function(table, start,   trials, AQ_chosen, DQ_chosen, Simulation
     #Now at the index of alpha of chosen dist
     
     
-    
-    
     if (Distribution == "Log"){
       
       sim_vec[i] = exp(rnorm(1,as.numeric(table1[index+1]), as.numeric(table1[index+2])))
@@ -1252,3 +1216,80 @@ Simulate_MG <- function(table, start,   trials, AQ_chosen, DQ_chosen, Simulation
   }
   return(sim_vec)
 }
+
+
+
+
+
+
+CRPS = function(Table, components, trials){
+  Term1 = 0
+  for (i in 1:(components*trials)){
+    A1 = (Table[['Loss']]-Table[[paste0('u',i)]])/Table[[paste0('s',i)]]
+    B1 = Table[[paste0('s',i)]]*2*dnorm(A1, 0, 1)
+    
+    C1 = Table[['Loss']] - Table[[paste0('u',i)]]
+    C1 = C1*(2*pnorm(A1, 0, 1) - 1)
+    Term1 = Term1 + Table[[paste0('a',i)]]*(B1 + C1)/trials
+  }
+  
+  Table[,Term1 := Term1]
+  
+  
+  #Term 2
+  
+  
+  
+  Term2 = 0
+  
+  for (i in 1:(components*trials)){
+    for (j in 1:(components*trials)){
+      
+      SigmaTerm = sqrt(Table[[paste0('s',i)]]^2 + Table[[paste0('s',j)]]^2)
+      MuTerm = Table[[paste0('u',i)]] - Table[[paste0('u',j)]]
+      
+      A1 = 2*SigmaTerm*dnorm(MuTerm/SigmaTerm, 0, 1)
+      B1 = MuTerm*(2*pnorm(MuTerm/SigmaTerm, 0, 1) - 1)
+      Term2 = Term2+Table[[paste0('a',i)]]*Table[[paste0('a',j)]]*(A1 + B1)/(trials^2)
+      
+      
+    }
+    
+  }
+  
+  
+  Table[,Term2 := Term2]
+  
+  Table[,CRPS := Term1 - 0.5*Term2]
+  
+  
+  return(Table)
+  
+}
+
+
+
+CRPS_LN = function(Table, start, components, trials, Simulations){
+  set.seed(1)
+  rows = 0
+  print('Calculating CRPS')
+  for (i in 1:40){
+    for (j in 1:40){
+      if (i + j > 41){
+        if (rows %% 100 == 0){
+        print(paste0(rows, '/',nrow(Table[AQ + DQ > 41])))
+        }
+        Sims = Simulate_MG(Table, start = start, trials = trials, AQ_chosen = i, DQ_chosen = j, Simulations = Simulations)
+        Table[AQ == i & DQ == j, Term1 := mean(abs(Sims - Table[AQ == i & DQ == j, Loss]))]
+        Table[AQ == i & DQ == j, Term2 := mean(abs(outer((Sims), (Sims), FUN = '-')))]
+        Table[AQ == i & DQ == j, CRPS := Term1 - 0.5*Term2]
+        rows = rows+1
+      }
+    }
+  }
+  print('Done')
+  Table[,":="(Term1 = NULL, Term2 = NULL)]
+  return(Table)
+  
+}
+

@@ -7,7 +7,7 @@
 # 2. Scaling back mean and sigma estimates (Loss was normalised in the pre-processing module)
 # 3. Storing multiple trials (the model is run multiple times)
 # 4. Averages fits from multiple runs
-# 5. Assess the RMSE, Log Score and Quantile Scores of the model
+# 5. Assess the RMSE, wMAPE, Log Score, CRPS and Quantile Scores of the model
 
 
 for (trial in 1:5){
@@ -116,6 +116,8 @@ Full_Results = quantile_prediction_log(Full_Results, start, components, trials, 
 Full_Results = quantile_prediction_log(Full_Results, start, components, trials, 0.95, 0.001, 200)
 Full_Results = quantile_loss(Full_Results, 0.75)
 Full_Results = quantile_loss(Full_Results, 0.95)
+Full_Results = CRPS_LN(Full_Results, start = start, 
+                       components = components, trials = trials, Simulations = 100)
 
 #Set a minimum on the log likelihood of individual cells. 
 #This reduces the influence of low-volume points in the later DQs
@@ -125,13 +127,14 @@ Full_Results[logScore < -50, logScore := -50]
 fwrite(Full_Results, paste0(output_directory, "/Full_Results.csv"))
 
 
-#Record and save the accuracy of the ensemble model (RMSE and Log Score, Quantile Scores) in a data frame
+#Record and save the accuracy of the ensemble model (RMSE, wMAPE, Log Score, CRPS and Quantile Scores) in a data frame
 Scores <- data.frame(
   "Data" = Data_Name,
   "Model" = Model_Name,
   "RMSE" = sqrt(mean(Full_Results[Test == 1, AbsError^2])),
+  "wMAPE" = sum(Full_Results[Test == 1, AbsError])/sum(Full_Results[Test == 1, Loss]),
   "MeanLogScore" = mean(Full_Results[Test == 1, logScore]),
-  "MeanLogScore35" = mean(Full_Results[Test == 1 & DQ <= 35, logScore]),
+  "MeanCRPS" = mean(Full_Results[Test == 1, CRPS]),
   "QuantileScore75" = mean(Full_Results[Test == 1, `MDNLoss75`]),
   "QuantileScore95" = mean(Full_Results[Test == 1, `MDNLoss95`])
 )

@@ -3,7 +3,7 @@
 ###########################
 # This module:
 # - Fits a ccODP model to the triangle
-# - Computes the RMSE, log score and quantile scores of the ccODP fit
+# - Computes the RMSE, wMAPE, log score, CRPS and quantile scores of the ccODP fit
 # - Compares the ccODP to the MDN/ResMDN model
 
 #Load triangle 
@@ -60,7 +60,7 @@ fwrite(Comparison, paste0(output_directory, "/ModelComparisons.csv"))
 
 
 
-#Calculate RMSE, log score and quantile scores of the ccODP
+#Calculate RMSE, wMAPE, log score, CRPS and quantile scores of the ccODP
 ccODP[,log_score := log(dpois(floor(Loss/Dispersion), ccODP/Dispersion)/Dispersion)]
 #Set the log score at a minimum of -50, to reduce the influence of low-volume data points
 ccODP[log_score < -50, log_score := -50]
@@ -68,6 +68,10 @@ ccODP = quantile_ccODP(ccODP, 0.75)
 ccODP = quantile_ccODP(ccODP, 0.95)
 ccODP = quantile_loss_cc(ccODP, 0.75)
 ccODP = quantile_loss_cc(ccODP, 0.95)
+ccODP[,AbsError := abs(ccODP - Loss)]
+ccODP[,CRPS := Dispersion*crps_pois(Loss/Dispersion, ccODP/Dispersion)]
+
+
 
 fwrite(ccODP, paste0(output_directory, "/ccODP.csv"))
 
@@ -76,8 +80,9 @@ ccODP_Score = data.frame(
   "Data" = Data_Name,
   "Model" = "ccODP",
   "RMSE" = sqrt(mean((ccODP[Test == 1, ccODP] - ccODP[Test == 1, Loss])^2)),
+  "wMAPE" = sum(ccODP[Test == 1, AbsError])/sum(ccODP[Test == 1, Loss]),
   "MeanLogScore" = mean(ccODP[Test == 1, log_score]),
-  "MeanLogScore35" = mean(ccODP[Test == 1 & DQ <= 35, log_score]),
+  "MeanCRPS" = mean(ccODP[Test == 1, CRPS]),
   "QuantileScore75" = mean(ccODP[Test == 1, CCLoss75]),
   "QuantileScore95" = mean(ccODP[Test == 1, CCLoss95])
 )
